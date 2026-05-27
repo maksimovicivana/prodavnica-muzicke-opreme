@@ -1,0 +1,85 @@
+CREATE DATABASE `ProdavnicaMuzickeOpreme_VP_2025` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `ProdavnicaMuzickeOpreme_VP_2025`.`ARTIKAL`
+(
+   SifraArtikla varchar(12) NOT NULL PRIMARY KEY,
+   NazivArtikla varchar(80) NOT NULL,
+   Kategorija varchar(40) NOT NULL,
+   Brend varchar(40) NOT NULL,
+   Cena decimal(10,2) NOT NULL,
+   StanjeNaLageru int NOT NULL,
+   Opis varchar(255) NOT NULL,
+   NazivSlike varchar(120) NULL
+);
+
+CREATE TABLE `ProdavnicaMuzickeOpreme_VP_2025`.`PORUDZBINA`
+(
+   BrojPorudzbine varchar(20) NOT NULL PRIMARY KEY,
+   Kupac varchar(100) NOT NULL,
+   EmailKupca varchar(100) NOT NULL,
+   DatumPorudzbine date NOT NULL,
+   StatusPorudzbine varchar(30) NOT NULL,
+   NacinPlacanja varchar(30) NOT NULL,
+   Napomena varchar(255) NULL
+);
+
+CREATE TABLE `ProdavnicaMuzickeOpreme_VP_2025`.`STAVKA_PORUDZBINE`
+(
+   IDStavke int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   BrojPorudzbine varchar(20) NOT NULL,
+   SifraArtikla varchar(12) NOT NULL,
+   Kolicina int NOT NULL,
+   JedinicnaCena decimal(10,2) NOT NULL,
+   PopustProcenat decimal(5,2) NOT NULL DEFAULT 0
+);
+
+ALTER TABLE `ProdavnicaMuzickeOpreme_VP_2025`.`STAVKA_PORUDZBINE`
+ADD CONSTRAINT FK_STAVKA_PORUDZBINE
+FOREIGN KEY (BrojPorudzbine)
+REFERENCES `ProdavnicaMuzickeOpreme_VP_2025`.`PORUDZBINA`(BrojPorudzbine)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
+ALTER TABLE `ProdavnicaMuzickeOpreme_VP_2025`.`STAVKA_PORUDZBINE`
+ADD CONSTRAINT FK_STAVKA_ARTIKAL
+FOREIGN KEY (SifraArtikla)
+REFERENCES `ProdavnicaMuzickeOpreme_VP_2025`.`ARTIKAL`(SifraArtikla)
+ON DELETE RESTRICT
+ON UPDATE CASCADE;
+
+CREATE TABLE `ProdavnicaMuzickeOpreme_VP_2025`.`KORISNIK`
+(
+   IDKORISNIKA int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   PREZIME varchar(50) NOT NULL,
+   IME varchar(40) NOT NULL,
+   EMAIL varchar(60) NOT NULL,
+   KORISNICKOIME varchar(30) NOT NULL,
+   SIFRA varchar(30) NOT NULL,
+   URLSLIKE varchar(250) NULL,
+   STATUSUCESCA varchar(30) NOT NULL
+);
+
+INSERT INTO `ProdavnicaMuzickeOpreme_VP_2025`.`KORISNIK`
+(PREZIME, IME, EMAIL, KORISNICKOIME, SIFRA, URLSLIKE, STATUSUCESCA)
+VALUES
+('Maksimović', 'Ivana', 'ivana.maksimovic@muzicka-oprema.rs', 'imaksimovic', 'ivana123', 'ivana.jpg', 'zaposleni');
+
+INSERT INTO `ProdavnicaMuzickeOpreme_VP_2025`.`ARTIKAL`
+(SifraArtikla, NazivArtikla, Kategorija, Brend, Cena, StanjeNaLageru, Opis, NazivSlike)
+VALUES
+('GIT-001', 'Električna gitara Strat style', 'Gitare', 'Fender', 74990.00, 5, 'Scenska gitara za rock i pop repertoar.', 'gitara-strat.jpg'),
+('KEY-002', 'Stage klavijatura 88 dirki', 'Klavijature', 'Yamaha', 129990.00, 3, 'Klavijatura za svirke i studijski rad.', 'stage-key.jpg'),
+('MIC-003', 'Kondenzatorski mikrofon', 'Mikrofoni', 'Audio-Technica', 19990.00, 9, 'Mikrofon za vokale, podkast i studio.', 'mikrofon.jpg'),
+('INT-004', 'Audio interfejs 2x2 USB', 'Studio oprema', 'Focusrite', 24990.00, 6, 'Interfejs za kućni studio i snimanje instrumenata.', 'interfejs.jpg'),
+('DRM-005', 'Elektronski bubanj set', 'Bubnjevi', 'Roland', 168990.00, 2, 'Set za probu, učenje i tiši rad u stanu.', 'bubnjevi.jpg');
+
+INSERT INTO `ProdavnicaMuzickeOpreme_VP_2025`.`PORUDZBINA`
+(BrojPorudzbine, Kupac, EmailKupca, DatumPorudzbine, StatusPorudzbine, NacinPlacanja, Napomena)
+VALUES
+('POR-20260526-120000', 'Studio Orion', 'nabavka@studio-orion.rs', '2026-05-26', 'Potvrđena', 'Predračun', 'Isporuka u roku od tri radna dana.');
+
+INSERT INTO `ProdavnicaMuzickeOpreme_VP_2025`.`STAVKA_PORUDZBINE`
+(BrojPorudzbine, SifraArtikla, Kolicina, JedinicnaCena, PopustProcenat)
+VALUES
+('POR-20260526-120000', 'MIC-003', 2, 19990.00, 5.00),
+('POR-20260526-120000', 'INT-004', 1, 24990.00, 0.00);

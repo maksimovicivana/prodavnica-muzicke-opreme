@@ -1,0 +1,79 @@
+-- REŠENJE - POGLEDI
+-- ------------------------------------------
+CREATE VIEW `ProdavnicaMuzickeOpreme_VP_2025`.`PregledPorudzbinaSaUkupnimIznosom` AS
+SELECT
+    p.`BrojPorudzbine`,
+    p.`Kupac`,
+    p.`EmailKupca`,
+    p.`DatumPorudzbine`,
+    p.`StatusPorudzbine`,
+    p.`NacinPlacanja`,
+    COUNT(sp.`IDStavke`) AS `BrojStavki`,
+    ROUND(SUM(sp.`Kolicina` * sp.`JedinicnaCena` * (1 - sp.`PopustProcenat` / 100)), 2) AS `UkupanIznos`
+FROM `ProdavnicaMuzickeOpreme_VP_2025`.`PORUDZBINA` p
+LEFT JOIN `ProdavnicaMuzickeOpreme_VP_2025`.`STAVKA_PORUDZBINE` sp
+    ON p.`BrojPorudzbine` = sp.`BrojPorudzbine`
+GROUP BY
+    p.`BrojPorudzbine`,
+    p.`Kupac`,
+    p.`EmailKupca`,
+    p.`DatumPorudzbine`,
+    p.`StatusPorudzbine`,
+    p.`NacinPlacanja`;
+
+CREATE VIEW `ProdavnicaMuzickeOpreme_VP_2025`.`PregledStavkiPorudzbine` AS
+SELECT
+    sp.`IDStavke`,
+    sp.`BrojPorudzbine`,
+    a.`SifraArtikla`,
+    a.`NazivArtikla`,
+    a.`Kategorija`,
+    a.`Brend`,
+    sp.`Kolicina`,
+    sp.`JedinicnaCena`,
+    sp.`PopustProcenat`,
+    ROUND(sp.`Kolicina` * sp.`JedinicnaCena` * (1 - sp.`PopustProcenat` / 100), 2) AS `IznosStavke`
+FROM `ProdavnicaMuzickeOpreme_VP_2025`.`STAVKA_PORUDZBINE` sp
+INNER JOIN `ProdavnicaMuzickeOpreme_VP_2025`.`ARTIKAL` a
+    ON sp.`SifraArtikla` = a.`SifraArtikla`;
+
+-- REŠENJE ZA STORED PROCEDURU - zaglavlje porudžbine
+-- --------------------------------------------------
+USE `ProdavnicaMuzickeOpreme_VP_2025`;
+DROP PROCEDURE IF EXISTS `DodajPorudzbinu`;
+DELIMITER $$
+USE `ProdavnicaMuzickeOpreme_VP_2025`$$
+CREATE PROCEDURE `DodajPorudzbinu`
+(
+    IN BrojPorudzbineParametar varchar(20),
+    IN KupacParametar varchar(100),
+    IN EmailKupcaParametar varchar(100),
+    IN DatumPorudzbineParametar date,
+    IN StatusPorudzbineParametar varchar(30),
+    IN NacinPlacanjaParametar varchar(30),
+    IN NapomenaParametar varchar(255)
+)
+BEGIN
+    INSERT INTO `PORUDZBINA`
+    (
+        `BrojPorudzbine`,
+        `Kupac`,
+        `EmailKupca`,
+        `DatumPorudzbine`,
+        `StatusPorudzbine`,
+        `NacinPlacanja`,
+        `Napomena`
+    )
+    VALUES
+    (
+        BrojPorudzbineParametar,
+        KupacParametar,
+        EmailKupcaParametar,
+        DatumPorudzbineParametar,
+        StatusPorudzbineParametar,
+        NacinPlacanjaParametar,
+        NapomenaParametar
+    );
+END
+$$
+DELIMITER ;
